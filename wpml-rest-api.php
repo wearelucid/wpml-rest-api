@@ -15,19 +15,20 @@ function wpmlrestapi_init() {
 	// Check if WPML is installed
 	include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
-	if (!is_plugin_active('sitepress-multilingual-cms/sitepress.php')) {
+	if (!is_plugin_active('sitepress-multilingual-cms/sitepress.php') && !is_plugin_active('wpml-multilingual-cms/sitepress.php')) {
+		error_log( 'WPML is not active' );
 		return;
 	}
-	
+
 	$available_langs = wpml_get_active_languages_filter('', array('skip_missing' => false, ) );
-		
+
 	if ( ! empty( $available_langs ) && ! isset( $GLOBALS['icl_language_switched'] ) || ! $GLOBALS['icl_language_switched'] ) {
 		if ( isset( $_REQUEST['wpml_lang'] ) ) {
 			$lang = $_REQUEST['wpml_lang'];
 		} else if ( isset( $_REQUEST['lang'] ) ) {
 			$lang = $_REQUEST['lang'];
 		}
-		
+
 		if ( isset( $lang ) && in_array( $lang, array_keys( $available_langs ) ) ) {
 			do_action( 'wpml_switch_language', $lang );
 		}
@@ -94,7 +95,7 @@ function wpmlrestapi_slug_get_translations( $object, $field_name, $request ) {
 			$href .= $thisPost->post_name . '/';
 		}
 
-		$translations[] = array('locale' => $language['default_locale'], 'id' => $thisPost->ID, 'post_title' => $thisPost->post_title, 'href' => $href);
+		$translations[] = array('locale' => $language['default_locale'], 'id' => $thisPost->ID, 'post_title' => $thisPost->post_title, 'href' => $href, 'slug' => $thisPost->post_name);
 	}
 
 	return $translations;
